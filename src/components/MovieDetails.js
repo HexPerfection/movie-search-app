@@ -8,7 +8,7 @@ const MovieDetails = () => {
 
   useEffect(() => {
     const fetchMovieDetails = async () => {
-      const res = await axios.get(`http://www.omdbapi.com/?i=${id}&apikey=YOUR_API_KEY`);
+      const res = await axios.get(`http://www.omdbapi.com/?i=${id}&apikey=${process.env.REACT_APP_OMDB_API_KEY}`);
       setMovie(res.data);
     };
     fetchMovieDetails();

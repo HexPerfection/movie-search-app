@@ -8,7 +8,7 @@ const MovieSearch = () => {
 
   const handleSearch = async (e) => {
     e.preventDefault();
-    const res = await axios.get(`http://www.omdbapi.com/?s=${query}&apikey=YOUR_API_KEY`);
+    const res = await axios.get(`http://www.omdbapi.com/?s=${query}&apikey=${process.env.REACT_APP_OMDB_API_KEY}`);
     setMovies(res.data.Search || []);
   };
 
@@ -26,7 +26,10 @@ const MovieSearch = () => {
 
       <div>
         {movies.map(movie => (
+            <div>
             <Link to={`/movie/${movie.imdbID}`}>{movie.Title}</Link>
+            <br></br>
+            </div>
         ))}
       </div>
     </div>
