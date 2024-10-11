@@ -3,15 +3,24 @@ import axios from 'axios';
 import { Link } from 'react-router-dom';
 import { WatchlistContext } from '../context/WatchlistContext'; 
 
-const MovieSearch = () => {
+const SearchBar = () => {
   const [query, setQuery] = useState('');
   const [movies, setMovies] = useState([]);
   const [year, setYear] = useState(''); 
-  const [type, setType] = useState(''); 
+  const [type, setType] = useState('');
+  const [error, setError] = useState(null); 
   const { watchlist, addToWatchlist } = useContext(WatchlistContext);
 
   const handleSearch = async (e) => {
     e.preventDefault();
+    setError(null);
+
+    // Handle empty query
+    if (!query.trim()) {
+      setError('Please enter a movie title to search.');
+      return;
+    }
+
     try {
       // Build the API request URL with filters
       let url = `http://www.omdbapi.com/?s=${query}&apikey=${process.env.REACT_APP_OMDB_API_KEY}&page=1`;
@@ -27,7 +36,20 @@ const MovieSearch = () => {
       }
 
       const res = await axios.get(url);
-      setMovies(res.data.Search || []);
+      if (res.data.Response === 'False') {
+        // Check for specific errors from OMDb
+        if (res.data.Error === 'Too many results.') {
+          setError('Too many results. Please be more specific.');
+        } else if (res.data.Error === 'Movie not found!') {
+          setError('No movies found. Please try a different search.');
+        } else {
+          setError('An unknown error occurred.');
+        }
+        setMovies([]); // Clear previous movie results
+      } else {
+        // Successfully fetched movies
+        setMovies(res.data.Search || []);
+      }
     } catch (error) {
       console.error('Error fetching data from API:', error);
     }
@@ -60,17 +82,21 @@ const MovieSearch = () => {
         <button type="submit">Search</button>
       </form>
 
+      {/* Display error messages */}
+      {error && <div style={{ color: 'red', marginTop: '10px' }}>{error}</div>}
+
       <div>
         {movies.map(movie => (
             <div>
-            <Link to={`/movie/${movie.imdbID}`}>{movie.Title}</Link>
-            <button 
-              onClick={() => addToWatchlist(movie)} 
-              disabled={isMovieInWatchlist(movie)}
-            >
-              {isMovieInWatchlist(movie) ? "Already in Watchlist" : "Add to Watchlist"}
-            </button>
-            <br></br>
+                <img src={movie.Poster} alt={movie.Title} />
+                <Link to={`/movie/${movie.imdbID}`}>{movie.Title}</Link>
+                <button 
+                onClick={() => addToWatchlist(movie)} 
+                disabled={isMovieInWatchlist(movie)}
+                >
+                {isMovieInWatchlist(movie) ? "Already in Watchlist" : "Add to Watchlist"}
+                </button>
+                <br></br>
             </div>
         ))}
       </div>
@@ -78,4 +104,4 @@ const MovieSearch = () => {
   );
 };
 
-export default MovieSearch;
+export default SearchBar;
