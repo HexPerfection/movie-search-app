@@ -7,10 +7,13 @@ const MovieDetails = () => {
   const { id } = useParams();
   const [movie, setMovie] = useState(null);
   const { addToWatchlist } = useContext(WatchlistContext);
+  const placeholderImg = 'https://via.placeholder.com/300x450?text=No+Image';
 
   useEffect(() => {
     const fetchMovieDetails = async () => {
-      const res = await axios.get(`http://www.omdbapi.com/?i=${id}&apikey=${process.env.REACT_APP_OMDB_API_KEY}`);
+      const res = await axios.get(
+        `http://www.omdbapi.com/?i=${id}&apikey=${process.env.REACT_APP_OMDB_API_KEY}`
+      );
       setMovie(res.data);
     };
     fetchMovieDetails();
@@ -19,24 +22,38 @@ const MovieDetails = () => {
   if (!movie) return <div>Loading...</div>;
 
   return (
-    <div>
-      <h1>{movie.Title}</h1>
-      <p>{movie.Plot}</p>
-      <p>Runtime: {movie.Runtime}</p>
-      <p>Genre: {movie.Genre}</p>
-      <p>Director: {movie.Director}</p>
-      <p>Actors: {movie.Actors}</p>
-      <p>Language: {movie.Language}</p>
-      <p>Country: {movie.Country}</p>
-      <p>Awards: {movie.Awards}</p>
-      <p>BoxOffice: {movie.BoxOffice}</p>
-      <p>Metascore: {movie.Metascore}</p>
-      <p>Type: {movie.Type}</p>
-      <p>Season: {movie.totalSeasons}</p>
-      <p>Released: {movie.Released}</p>
-      <p>Rating: {movie.imdbRating}</p>
-      <img src={movie.Poster} alt={movie.Title}></img>
-      <button onClick={() => addToWatchlist(movie)}>Add to Watchlist</button>
+    <div className="movie-details">
+      {/* Movie Poster */}
+      <img
+        src={movie.Poster !== 'N/A' ? movie.Poster : placeholderImg}
+        alt={movie.Title}
+        className="movie-poster"
+      />
+
+      {/* Movie Info */}
+      <div className="movie-info">
+        <h1>{movie.Title} ({movie.Year})</h1>
+        <p><strong>Plot:</strong> {movie.Plot || 'No plot available.'}</p>
+        <p><strong>Runtime:</strong> {movie.Runtime || 'N/A'}</p>
+        <p><strong>Genre:</strong> {movie.Genre || 'N/A'}</p>
+        <p><strong>Director:</strong> {movie.Director || 'N/A'}</p>
+        <p><strong>Actors:</strong> {movie.Actors || 'N/A'}</p>
+        <p><strong>Language:</strong> {movie.Language || 'N/A'}</p>
+        <p><strong>Country:</strong> {movie.Country || 'N/A'}</p>
+        <p><strong>Awards:</strong> {movie.Awards || 'N/A'}</p>
+        <p><strong>Box Office:</strong> {movie.BoxOffice || 'N/A'}</p>
+        <p><strong>Metascore:</strong> {movie.Metascore || 'N/A'}</p>
+        {movie.Type === 'series' && (
+          <p><strong>Seasons:</strong> {movie.totalSeasons || 'N/A'}</p>
+        )}
+        <p><strong>Released:</strong> {movie.Released || 'N/A'}</p>
+        <p><strong>IMDb Rating:</strong> {movie.imdbRating || 'N/A'}</p>
+
+        {/* Add to Watchlist Button */}
+        <button onClick={() => addToWatchlist(movie)}>
+          Add to Watchlist
+        </button>
+      </div>
     </div>
   );
 };

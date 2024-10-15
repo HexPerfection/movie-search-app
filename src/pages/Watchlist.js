@@ -5,12 +5,12 @@ const Watchlist = () => {
   const { watchlist, removeFromWatchlist } = useContext(WatchlistContext);
 
   return (
-    <div>
+    <div className="watchlist-grid">
       <h1>Your Watchlist</h1>
       {watchlist.length === 0 ? (
         <p>No movies in your watchlist.</p>
       ) : (
-        <div>
+        <div className='watchlist-item'>
           {watchlist.map(movie => (
             <div key={movie.imdbID}>
               <h3>{movie.Title} ({movie.Year})</h3>

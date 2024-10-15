@@ -11,6 +11,9 @@ const SearchBar = () => {
   const [error, setError] = useState(null); 
   const { watchlist, addToWatchlist } = useContext(WatchlistContext);
 
+  const placeholderImg = 'https://placehold.co/200x300?text=No%20image%20available';
+
+
   const handleSearch = async (e) => {
     e.preventDefault();
     setError(null);
@@ -58,9 +61,9 @@ const SearchBar = () => {
   const isMovieInWatchlist = (movie) => watchlist.some((m) => m.imdbID === movie.imdbID);
 
   return (
-    <div>
-      <Link to="/watchlist">Watchlist</Link>
-      <form onSubmit={handleSearch}>
+    <div className="container">
+      <Link to="/watchlist" className='watchlist-link'>Watchlist</Link>
+      <form className="search-form" onSubmit={handleSearch}>
         <input 
           type="text" 
           value={query} 
@@ -83,12 +86,12 @@ const SearchBar = () => {
       </form>
 
       {/* Display error messages */}
-      {error && <div style={{ color: 'red', marginTop: '10px' }}>{error}</div>}
+      {error && <div style={{ color: 'red', marginTop: '10px', textAlign: 'center'}}>{error}</div>}
 
-      <div>
+      <div className="movie-grid">
         {movies.map(movie => (
-            <div>
-                <img src={movie.Poster} alt={movie.Title} />
+            <div className='movie-card'>
+                <img src={movie.Poster !== 'N/A' ? movie.Poster : placeholderImg} alt={movie.Title}/>
                 <Link to={`/movie/${movie.imdbID}`}>{movie.Title}</Link>
                 <button 
                 onClick={() => addToWatchlist(movie)} 
